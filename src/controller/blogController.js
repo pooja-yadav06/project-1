@@ -158,7 +158,7 @@ const updateBlog = async function (req, res) {
         //==========================title validation==============
         if (BlogData.hasOwnProperty("title")) {
             let title = BlogData.title
-            if (typeof title !== "string" || title.trim().length === 0) return res.status(400).send({ status: false, msg: "title should be string and should not contain spaces" })
+            if (typeof title !== "string" || title.trim().length === 0) return res.status(400).send({ status: false, msg: "title should be string" })
 
             let title1 = /\w*\s*|\w|\D/.test(title.trim())
             if (!title1) return res.status(400).send({ stats: true, msg: "enter valid title" })
@@ -166,7 +166,7 @@ const updateBlog = async function (req, res) {
         //=========================body validation============
         if (BlogData.hasOwnProperty("body")) {
             let body = BlogData.body
-            if (typeof body !== "string" || body.trim().length === 0) return res.status(400).send({ status: false, msg: "body should be string and should not contain spaces" })
+            if (typeof body !== "string" || body.trim().length === 0) return res.status(400).send({ status: false, msg: "body should be string" })
 
             let body1 = /\w*\s*|\w|\D/.test(body.trim())
             if (!body1) return res.status(400).send({ stats: true, msg: "enter valid body" })

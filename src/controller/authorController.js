@@ -18,7 +18,7 @@ const createAuthor = async function (req, res) {
 
         // ============lname validation.................
         let lname = authorData.lname
-        if (!lname || lname == undefined) return res.status(400).send({ status: false, msg: "last name is required" })
+        if (/*!lname */ lname == undefined) return res.status(400).send({ status: false, msg: "last name is required" })
         if (typeof lname !== "string" || lname.trim().length === 0) return res.status(400).send({ status: false, msg: "last name should be string and should not contain spaces" })
 
         let lsname = /^[a-zA-Z]{2,20}$/.test(lname.trim())
@@ -33,14 +33,14 @@ const createAuthor = async function (req, res) {
         if (!ltitle) return res.status(400).send({ stats: true, msg: "enter valid title" })
 
         //=========================email validation=======================
-        let email = authorData.email
-        if (!email || email == undefined) return res.status(400).send({ status: false, msg: "email is required" })
-        if (typeof email !== "string" || email.trim().length === 0) return res.status(400).send({ status: false, msg: "email should be string and should not contain spaces" })
+        let email1 = authorData.email
+        if (!email1 || email1 == undefined) return res.status(400).send({ status: false, msg: "email is required" })
+        if (typeof email1 !== "string" || email1.trim().length === 0) return res.status(400).send({ status: false, msg: "email should be string and should not contain spaces" })
 
-        let mail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email.trim())
+        let mail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email1.trim())
         if (!mail) return res.status(400).send({ stats: true, msg: "enter valid mail" })
-        let findUser = await authorModel.find({email:email})
-        if (findUser) return res.status(400).send({ status: false, msg: "Email is aleardy Exist" })
+        let findUser = await authorModel.find({email:email1})
+        if (findUser.length!=0) return res.status(400).send({ status: false, msg: "Email is aleardy Exist" })
 
 
         //==========================Password validation================================
