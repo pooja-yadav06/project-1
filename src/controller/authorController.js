@@ -35,7 +35,7 @@ const createAuthor = async function (req, res) {
         //=========================email validation=======================
         let email1 = authorData.email
         if (!email1 || email1 == undefined) return res.status(400).send({ status: false, msg: "email is required" })
-        if (typeof email1 !== "string" || email1.trim().length === 0) return res.status(400).send({ status: false, msg: "email should be string and should not contain spaces" })
+        if (typeof email1 !== "string" || email1.trim().length === 0) return res.status(400).send({ status: false, msg: "email should be string" })
 
         let mail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email1.trim())
         if (!mail) return res.status(400).send({ stats: true, msg: "enter valid mail" })
@@ -46,7 +46,7 @@ const createAuthor = async function (req, res) {
         //==========================Password validation================================
         let password = authorData.password
         if (!password || password == undefined) return res.status(400).send({ status: false, msg: "password is required" })
-        if (typeof password !== "string" || password.trim().length === 0) return res.status(400).send({ status: false, msg: "password should be string and should not contain spaces" })
+        if (typeof password !== "string" || password.trim().length === 0) return res.status(400).send({ status: false, msg: "password should be string" })
 
         let pass = /^[a-zA-Z0-9]{6,16}$/.test(password.trim())
         if (!pass) return res.status(400).send({ stats: true, msg: "enter valid password" })
@@ -70,7 +70,7 @@ const loginAuthor = async function (req, res) {
         let password = req.body.password;
     
         if (!email || email == undefined) return res.status(400).send({ status: false, msg: "email is required" })
-        if (typeof email !== "string" || email.trim().length === 0) return res.status(400).send({ status: false, msg: "email should be string and should not contain spaces" })
+        if (typeof email !== "string" || email.trim().length === 0) return res.status(400).send({ status: false, msg: "email should be string" })
 
         let mail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email.trim())
         if (!mail) return res.status(400).send({ stats: true, msg: "enter valid mail" })
@@ -80,7 +80,7 @@ const loginAuthor = async function (req, res) {
         //==========================Password validation================================
      
         if (!password || password == undefined) return res.status(400).send({ status: false, msg: "password is required" })
-        if (typeof password !== "string" || password.trim().length === 0) return res.status(400).send({ status: false, msg: "password should be string and should not contain spaces" })
+        if (typeof password !== "string" || password.trim().length === 0) return res.status(400).send({ status: false, msg: "password should be string" })
 
         let pass = /^[a-zA-Z0-9]{6,16}$/.test(password.trim())
         if (!pass) return res.status(400).send({ stats: true, msg: "enter valid password" })
