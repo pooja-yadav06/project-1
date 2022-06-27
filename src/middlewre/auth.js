@@ -1,4 +1,4 @@
-//const userModel = require("../models/userModel")
+const authorModel = require("../model/authorModel")
 const jwt = require("jsonwebtoken");
 const blogModel = require("../model/blogModel");
 
@@ -24,6 +24,29 @@ const mid2 = async function (req, res, next) {
     let blogData = await blogModel.findById(blogToBeModified)
     let authId = blogData.authorId
     let userLoggedIn = decodedToken.authoRId
+    if (authId == userLoggedIn) {
+        next()
+    } else { return res.send({ status: false, msg: 'User logged is not allowed to modify the requested users data' }) }
+}
+
+
+const mid4 = async function (req, res, next) {
+    let token = req.headers["x-api-key"];
+    if (!token) token = req.headers["x-api-key"];
+
+    let decodedToken = jwt.verify(token, 'functionup-radon')
+
+    if (!decodedToken) return res.send({ status: false, msg: "token is not valid" })
+    data = req.body
+    let id= data.authorId
+    //console.log(blogToBeModified)
+    let blogData = await authorModel.findById({_id:id})
+    if(!blogData){return res.status(400).send({status:false,msg:"author not found"})}
+
+    let authId = blogData._id
+    console.log(authId)
+    let userLoggedIn = decodedToken.authoRId
+    console.log(userLoggedIn)
     if (authId == userLoggedIn) {
         next()
     } else { return res.send({ status: false, msg: 'User logged is not allowed to modify the requested users data' }) }
@@ -67,4 +90,5 @@ const mid3 = async function (req, res, next) {
 module.exports.mid1 = mid1
 module.exports.mid2 = mid2
 module.exports.mid3 = mid3
+module.exports.mid4 = mid4
 
