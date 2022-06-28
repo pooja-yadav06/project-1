@@ -1,44 +1,52 @@
 const blogModel = require("../model/blogModel");
 const mongoose = require('mongoose');
 const authorModel = require("../model/authorModel");
+const objectId=mongoose.Types.ObjectId
+const isValid1 = function (value) {
+    if (!value || value === undefined) return false
+    if (typeof value !== "string" || value.trim().length === 0) return false
+    return true
+}
 
 
 /*----------------CreateBlog-----------------------------*/
 
 const createBlog = async function (req, res) {
     try {
+
         let data = req.body
+        console.log(data)
+       
+            
+        const { title, body, authorId,tags, category, subcategory,isDeleted,isPublished} = data
 
         //===========title validation=================
-        let title = data.title
-        if (!title || title == undefined) return res.status(400).send({ status: false, msg: "title is required" })
-        if (typeof title !== "string" || title.trim().length === 0) return res.status(400).send({ status: false, msg: "title should be string" })
-
+        if (!isValid1(title)) { return res.status(400).send({ status: false, msg: "title is required" }) }
+       
         let title1 = /\w*\s*|\w|\D/.test(title.trim())
         if (!title1) return res.status(400).send({ stats: true, msg: "enter valid title" })
 
         //=========================body validation============
 
-        let body = data.body
-        if (!body || body == undefined) return res.status(400).send({ status: false, msg: "body is required" })
-        if (typeof body !== "string" || body.trim().length === 0) return res.status(400).send({ status: false, msg: "body should be string" })
-
+        if (!isValid1(body)) { return res.status(400).send({ status: false, msg: "body is required" }) }
+       
         let body1 = /\w*\s*|\w|\D/.test(body.trim())
         if (!body1) return res.status(400).send({ stats: true, msg: "enter valid body" })
 
         //===================================objectId validation===================
-        let authorId = data.authorId
-        if (!authorId || authorId == undefined) return res.status(400).send({ status: false, msg: "autorId is required" })
+        console.log(authorId)
+     
+        if (!authorId || authorId===undefined) return res.status(400).send({ status: false, msg: "autorId is required" })
         var isValid = mongoose.Types.ObjectId.isValid(authorId)
-        let id = await authorModel.findById({ _id: authorId })
-        if (!isValid) return res.status(400).send({ status: false, msg: "Enter valid  author id" })
-        if (!id) {
+        if (!isValid) return res.status(400).send({ status: false, msg: "Enter valid id" })
+        let id = await authorModel.findById({ _id: authorId})
+       if (!id) {
             return res.status(404).send({ status: false, msg: "author is not present" })
         }
 
         //====================================tags validation==========================
-        let tags = data.tags
-
+      
+    
         if (data.hasOwnProperty("tags")) {
             if (typeof tags !== "string" || tags.trim().length === 0) {
                 if (Array.isArray(tags)) {
@@ -51,7 +59,7 @@ const createBlog = async function (req, res) {
 
         }
         //==================================category=======================================
-        let category = data.category
+   
         if (!category || category == undefined) return res.status(400).send({ status: false, msg: "category is required" })
         if (typeof category !== "string") {
             if (Array.isArray(category)) {
@@ -65,7 +73,7 @@ const createBlog = async function (req, res) {
 
         //===========================================subcategory=================================
 
-        let subcategory = data.subcategory
+  
         if (data.hasOwnProperty("subcategory")) { //return res.status(400).send({ status: false, msg: "subcategory is required" })
             if (typeof subcategory !== "string" || subcategory.trim().length === 0) {
                 if (Array.isArray(subcategory)) {
@@ -78,22 +86,26 @@ const createBlog = async function (req, res) {
         }
 
         //===============================================isDeleted validation======================================
-        let isDeleted = data.isDeleted
+     
         if (data.hasOwnProperty("isDeleted")) {
             if (typeof isDeleted !== "boolean") { return res.status(400).send({ status: false, msg: "isDeleted should contain a boolean value" }) }
         }
 
         //===============================================isPublished validation=====================================
-        let isPublished = data.isPublished
+       
         if (data.hasOwnProperty("isPublished")) {
             if (typeof isPublished !== "boolean") { return res.status(400).send({ status: false, msg: "isPublished should contain a boolean value" }) }
         }
 
 
-
+        if(data.isPublished==true){ data.publishedAt=Date.now()}
+        if(data.isDeleted==true){ data.deletedAt=Date.now()}
         let blogData = await blogModel.create(data)
         res.status(201).send({ status: true, Data: blogData })
     }
+    
+        
+
     catch (error) {
         res.status(500).send({ status: false, msg: error.message })
     }
@@ -230,7 +242,8 @@ const deleteBlogs = async function (req, res) {
         let id = await blogModel.findById(blogId)
         if (id) {
             let updateBlog = await blogModel.findOneAndUpdate({ _id: blogId }, { isDeleted: true }, { new: true })
-            res.status(200).send({ status: true, data: updateBlog })
+            updateBlog.deletedAt=Date.now()
+            res.status(200).send({ status: true,msg:"data is deleted" ,deletedAt:updateBlog.deletedAt})
         }
         else { res.status(404).send({ msg: "blog not found" }) }
     }
@@ -253,13 +266,15 @@ const deleteUser = async function (req, res) {
         let Subcategory = req.query.subcategory;
         let tag = req.query.tags;
         let unpublished = req.query.isPublished
+       
 
         let deletedData = await blogModel.findOneAndUpdate({ $or: [{ authorId: authorid }, { isPublished: unpublished }, { category: Category }, { tags: tag }, { subcategory: Subcategory }] }, { isDeleted: true }, { new: true })
         if (!deletedData) {
             return res.status(404).send("No such blog exists")
         }
         else {
-            res.status(200).send({ status: "deleted", deletedUser: deletedData })
+            deletedData.deletedAt=Date.now()
+            res.status(200).send({ status: true, msg: "Data is deleted",deletedAt:deletedData.deletedAt })
         }
     }
     catch (err) {

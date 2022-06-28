@@ -66,7 +66,9 @@ const mid3 = async function (req, res, next) {
     let Subcategory = req.query.subcategory;
     let tag = req.query.tags;
     let unpublished = req.query.isPublished
+    if (authorid === undefined && Category === undefined && tag === undefined && Subcategory === undefined){return res.status(400).send({status:false,msg:"data is required to filter"})}
     let blogData = await blogModel.findOne({$or:[{authorId:authorid},{isPublished:unpublished},{category:Category},{tags:tag},{subcategory:Subcategory}]})
+    if(!blogData){return res.status(400).send({status:false,msg:"data not found"})}
     let authId = blogData.authorId
     console.log(authId)
     let userLoggedIn = decodedToken.authoRId

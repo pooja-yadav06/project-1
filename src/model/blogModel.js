@@ -1,6 +1,6 @@
-const { ObjectId } = require('bson');
-const mongoose = require('mongoose');
 
+const mongoose = require('mongoose');
+const ObjectId=mongoose.Types.ObjectId
 const blogSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -12,6 +12,7 @@ const blogSchema = new mongoose.Schema({
     },
     authorId: {
         type: ObjectId,
+        required:true,
         ref: "author1"
     },
     tags:{
@@ -35,7 +36,12 @@ const blogSchema = new mongoose.Schema({
     publishedAt:{
         type:Date,
         default:null
+    },
+    deletedAt:{
+        type:Date,
+        default:null
     }
+
 
 }, { timestamps: true });
 
